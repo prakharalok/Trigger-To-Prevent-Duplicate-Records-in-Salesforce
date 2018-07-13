@@ -1,0 +1,30 @@
+trigger <CustomName> on SObject (events)      //Use Before Insert & Before Update events.
+{
+ 
+ // Considering the Filter Criteria to be the Name
+	Set<String> nameSet = new Set<String>();
+	For(SObject <variablename> : trigger.new)
+	{
+		nameSet.add(<variablename>.name);
+	}
+	
+	if(nameSet.size() > 0 )
+	{
+		List<SObjectName> <ListInstanceName> = [select name ,id from SObject where name in :nameSet];
+		
+		Map<String ,SObjectName> <MapInstanceName> = new Map<String,SObjectName>();
+		For(SObject <variablename>: <ListInstanceName>)
+		{
+			<MapInstanceName>.put(<variablename>.name ,<variablename>);
+		}
+		
+		For(SObject <variablename> : trigger.new)
+		{
+			if(<MapInstanceName>.containsKey(<variablename>.name))
+			{
+				<variablename>.Name.addError('Name already Exist ');
+			}
+		}
+		
+	}
+}
